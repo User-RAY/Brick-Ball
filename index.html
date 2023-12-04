@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html> 
+  <head>
+    <title>Brick and Ball</title> 
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+	<!--This draws the canvas on the webpage -->
+    <canvas id="mycanvas"></canvas> 
+  </body>
+ 
+  <!-- Include the processing.js library -->
+  <!-- See https://khanacademy.zendesk.com/hc/en-us/articles/202260404-What-parts-of-ProcessingJS-does-Khan-Academy-support- for differences -->
+  <script src="processing.min.js"></script> 
+  <script>
+  var programCode = function(processingInstance) {
+    with (processingInstance) {
+      size(400, 400); 
+      frameRate(30);
+      
+      
+      
+
+        var score = 0;
+        var lives = 3;
+
+        var paddle = 200;
+        var paddleY = 380;
+        var paddleH = 10;
+        var paddleW = 100;
+        var move = 4;
+
+
+        var brickX = 65;
+        var brickY = 75;
+        var brickH = 20;
+        var brickW = 50;
+
+
+
+
+        var ballx = paddle;
+        var bally = 350;
+
+        var speedx = 3;
+        var speedy = 3;
+
+
+        var Bricks = [];
+
+        for (var r = 0; r < 6; r++){
+            
+            Bricks[r] = [];
+            for(var c = 0; c < 6; c++){
+                
+                Bricks[r][c] = {x: 0, y: 0, visible: 1};
+            }
+            
+        }
+
+
+
+
+
+
+
+        var draw = function() {
+            
+            background(50, 29, 120);
+            
+            
+            noFill();
+            
+            //paddle
+            fill(148, 144, 27);
+            rectMode(CENTER);
+            rect(paddle, paddleY, paddleW, paddleH);
+            
+            
+        
+            if (keyPressed && keyCode === LEFT) {
+                
+                paddle -= move;
+                
+            } else if (keyPressed && keyCode === RIGHT) {
+                
+                paddle += move;
+                
+            }
+            
+            
+            if( paddle < 35){
+                
+                paddle += move;
+                
+            } else if (paddle > 360){
+                
+                paddle -= move;
+                
+            } 
+            
+            
+            
+            
+            
+            //ball
+            
+            fill(219, 17, 17);
+            ellipse(ballx, bally, 15, 15);
+            
+        
+            if (ballx > 390 || ballx < 10){
+                
+                speedx = -speedx;
+                
+            }
+            
+            
+            
+            
+            ballx += speedx;
+            bally += speedy;
+            
+            
+            //paddle-ball collision
+            
+            if ( bally < 10){
+                
+                speedy = -speedy;
+                
+            } else if (bally > 365 && bally < 370){
+                
+                if(ballx > paddle - paddleW/2 - 8  && ballx < paddle + paddleW/2 + 8 && bally > paddle-paddleH/2){
+                    
+                    speedy = -speedy;
+                    
+                } else {lives--;}
+                
+            }
+            
+            if (bally > 400 && lives > 0){
+                
+                bally = 350;
+                ballx = paddle;
+                
+            }
+            
+            
+        
+            //Bricks
+            var brickcolor =[color(112, 217, 74), color(95, 184, 59), color(88, 156, 61), color(68, 140, 42), color(53, 115, 29), color(42, 82, 27)];
+            
+            for(var r = 0; r < 6; r++){
+                
+                for(var c = 0; c < 6; c++){
+                if(Bricks[r][c].visible === 1){ 
+                    var BrickX = brickX + 55 * r;
+                    var BrickY = brickY + 25 * c;
+                    
+                    Bricks[r][c].x = BrickX;
+                    Bricks[r][c].y = BrickY;
+                    
+                    fill(brickcolor[c]);
+                    rectMode(CENTER);
+                    rect(BrickX,  BrickY, brickW, brickH);
+                    
+                    
+                }
+                    
+                        
+                }
+                
+                
+            }
+        
+        
+            // Brick-ball collision and detection
+            noFill();
+            
+            var ran = floor(random(0, 2));
+            
+            for(var r = 0; r < 6; r++){
+                
+                for(var c = 0; c < 6; c++){
+                    
+                    var b = Bricks[r][c];
+                    
+                    if(b.visible === 1){
+                        
+                        if(ballx > b.x - (brickW/2 + 2)  && ballx < b.x + (brickW/2 + 2) && bally > b.y-                                (brickH/2 + 2) && bally < b.y + (brickH/2 + 2)){
+                            
+                            
+                            
+                            if(ran === 0){
+                                
+                            speedx = speedx;
+                            
+                            } else {
+                                
+                                speedx = -speedx;
+                            }
+                            speedy = -speedy;
+                            
+                            b.visible =0;
+                            
+                            score += 1; 
+                            
+                            
+                            
+                            
+                        }
+                        
+                    }
+                    
+                    
+                    
+                    
+                }
+                
+            }
+            
+            
+        if(lives === 0) {
+                    
+                    
+                    noFill();
+                    fill(255, 0, 0);
+                    textSize(30);
+                    text("GAME OVER", 100, 200);
+                    
+        }
+                
+                fill(0, 255, 0);
+                textSize(20);
+                text("Score = " + score, 5, 20);
+
+                if(score === 36){
+                    
+                    fill(36, 255, 51);
+                    textSize(30);
+                    text("YOU WIN", 128, 175);
+                    text("your total score: " + score, 70, 218);
+                    speedx = 0;
+                    speedy = 0;
+                    
+                }
+                
+                
+                textSize(20);
+                text("Lives = " + lives, 300, 20);
+
+                
+
+
+        };
+
+
+      
+     
+    }};
+
+  // Get the canvas that ProcessingJS will use
+  var canvas = document.getElementById("mycanvas"); 
+  // Pass the function to ProcessingJS constructor
+  var processingInstance = new Processing(canvas, programCode); 
+  </script>
+</html>
